@@ -1,0 +1,61 @@
+<nav>
+  <div class="nav-button" (click)="openMenu()">
+    <i class="fa fa-bars" aria-hidden="true"></i>
+  </div>
+  <p class="current-category">{{ currentCategory }}</p>
+  <div class="actions-menu" [ngClass]="actionsMenuActive ? 'active' : ''">
+    <span class="archive icon" (click)="moveSelectedMessages('archive', $event)"></span>
+    <span class="trash icon" (click)="moveSelectedMessages('trash', $event)"></span>
+    <span class="close icon" (click)="clearSelectedMessages($event)"></span>
+  </div>
+  <div class="sort"></div>
+</nav>  
+
+<div class="wrapper">
+  <div class="menu" [ngClass]="menuOpen ? 'open' : 'closed'">
+    <div class="menu-header">
+      <i class="icon close" aria-hidden="true" (click)="closeMenu()"></i>
+    </div>  
+    <strong class="menu-section-header">Sort By</strong>
+    <ul class="sort">
+      <li><a href="#" (click)="sortMessagesBy('date')">Date <i [ngClass]="currentDateSort === 'desc' ? 'desc' : 'asc'"></i></a></li>
+    </ul>
+    <strong class="menu-section-header">Labels</strong>
+    <ul>
+      <li *ngFor="let messageTag of messageTags" [ngClass]="filterTag === messageTag.tagName ? 'active' : ''">
+        <a href="#" (click)="tagClickHandler($event, messageTag.tagName)"><span class="tag">{{messageTag.tagName}}</span> <span class="count">{{messageTag.tagCount}}</span></a>
+      </li>
+      
+      <li *ngIf="trashedMessages.length > 0">
+        <a href="#" (click)="tagClickHandler($event, 'trash')"><span class="tag">Trash</span> <span class="count">{{trashedMessages.length}}</span></a>
+      </li>
+
+      <li *ngIf="archivedMessages.length > 0">
+        <a href="#" (click)="tagClickHandler($event, 'archive')"><span class="tag">Archive</span> <span class="count">{{archivedMessages.length}}</span></a>
+      </li>      
+    </ul>
+  </div>
+
+  <div class="table table-responsive">
+    <div class="row" *ngFor="let message of messages | filterMessages:filterTag" [ngClass]="messageState[message.id] ? 'checked' : ''" (click)="checkBoxClick(message.id, $event)">
+      <div class="cell checkbox">
+        <div class="box">
+          <span class="check">&#10003;</span>
+        </div>
+      </div>
+      <div class="cell content">
+        <div class="sender-info"><span class="sender-email">{{message.sender}}</span> <span class="date">{{message.date | date}}</span> </div>
+          
+        <div class="inner">
+          <div class="subject">
+            <span class="subject-text">{{message.subject}}</span> 
+            <span class="tag">
+              <a href="#" *ngFor="let tag of message.tags">{{tag}}</a>
+            </span>
+          </div>
+          <div class="snippet">{{message.body | stripHtml}}</div>
+        </div>  
+      </div>  
+    </div>
+  </div>
+</div>
