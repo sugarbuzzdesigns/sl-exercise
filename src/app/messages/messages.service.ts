@@ -96,48 +96,65 @@ export class MessagesService {
     ]
   }
 
+  /**
+   * Retrieves all tags from the messages object
+   * and counts how many of each tag we have. This 
+   * function probably needs some refactoring. 
+   * @param {array} messageArray 
+   * @returns {array}
+   */
   getMessageTags(messageArray?){
     let messages = this.getMessages();
-    let allTagNamesArray = [];
     let allTagsArray = [];
-    let tagCounts = [];
-    let uniqueTagsCount = 0;
 
+    // if a message array is supplied as a param, use that array. 
+    // otherwise, get the messages from the MessagesService class
     messageArray ? messages = messageArray : this.getMessages();
     
+    // loop through all messages and create a multidimensional array of tags
+    // Ex: [['work', travel], ['work'], ['travel']]
     messages.forEach((message, messageCount) => {
       let messageTags = message.tags;
       let messageId = message.id;
       
+      // if the message has tags, add that tag array to the allTagsArray
       if (messageTags.length) {        
         allTagsArray.push(messageTags);        
       }
     });
 
-    var arrays = allTagsArray;
-    var merged = [].concat.apply([], arrays);
-    var count = {}; 
+    // merge all tag arrays together so we can get
+    // a total count of each tag
+    let merged = [].concat.apply([], allTagsArray);
+    // temporary object to hold a count or each tag
+    let count = {}; 
     
+    // Looping through our flattened array to 
+    // get a count of the unique tags
     merged.forEach(function(tag, i) {
       count[tag] = (count[tag] || 0) + 1;  }
     ); 
     
-    var newArr = [];
+    // Array of tag objects that have a tagName and tagCount property
+    let tagObjectsArray = [];
 
-    newArr.push({
+    // add object for all messages
+    tagObjectsArray.push({
       tagName: 'All',
       tagCount: messages.length
-    })
+    });
 
-    for (var tag in count) {
-      newArr.push({
+    // create an *ngFor friendly array to loop
+    // through in our html template
+    for (let tag in count) {
+      tagObjectsArray.push({
         tagName: tag,
         tagCount: count[tag]
       });
-      
     }
 
-    return newArr;
+    // return our new tag object array
+    return tagObjectsArray;
   }
 
   setTrashedMessages(trashedMessages) {
